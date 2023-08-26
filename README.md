@@ -13,8 +13,8 @@
 ## How to run this project
 - clone this project
 - Give following command
---  npm i
---  npm test
+- npm i
+- npm test
 
 
 ## Project documentation
