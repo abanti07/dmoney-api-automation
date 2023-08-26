@@ -21,6 +21,7 @@
 https://documenter.getpostman.com/view/29168426/2s9Y5Wyj35
 
 ## Test report
+![report final](https://github.com/abanti07/dmoney-api-automation/assets/143074304/74f16a26-598a-42ef-a7df-8542489f97c0)
 
 
 ## Test Cases
