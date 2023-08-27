@@ -120,6 +120,19 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var prefix = \"01700\"\r",
+									"var randomNumber = _.random(100000, 999999)\r",
+									"var phoneNumber = prefix + randomNumber;\r",
+									"\r",
+									"pm.collectionVariables.set(\"agentphoneNumber\", phoneNumber);"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -138,7 +151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Test Agent 1\",\r\n    \"email\":\"agent0@test.com\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"01600360497\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Agent\"\r\n}",
+							"raw": "{\r\n    \"name\":\"Test Agent 1\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{agentphoneNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Agent\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -215,7 +228,7 @@
 					"response": []
 				},
 				{
-					"name": "create customers",
+					"name": "create customer",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -265,7 +278,78 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\":\"Second Customer\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{phoneNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}",
+							"raw": "{\r\n    \"name\":\"first Customer\",\r\n    \"email\":\"{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{phoneNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/user/create",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"user",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create customer2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var prefix= \"01700\"\r",
+									"var randomNumber= _.random(100000,999999)\r",
+									"var phoneNumber2= prefix+ randomNumber ;\r",
+									"\r",
+									"pm.collectionVariables.set(\"secondphoneNumber\", phoneNumber2);\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"check if provides required information user created \", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.contains(\"created\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "X-AUTH-SECRET-KEY",
+								"value": "{{partnerkey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Second Customer\",\r\n    \"email\":\"secound{{$randomEmail}}\",\r\n    \"password\":\"1234\",\r\n    \"phone_number\":\"{{secondphoneNumber}}\",\r\n    \"nid\":\"123456789\",\r\n    \"role\":\"Customer\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -403,7 +487,7 @@
 								"exec": [
 									"pm.test(\"check if amount is in limit deposit successful\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.contains(\"Maximum limit exceeded.\");\r",
+									"    pm.expect(jsonData.message).to.contains(\"successful\");\r",
 									"});\r",
 									""
 								],
@@ -415,6 +499,8 @@
 							"script": {
 								"exec": [
 									"var amount= _.random(0010, 9999)\r",
+									"\r",
+									"\r",
 									"\r",
 									""
 								],
@@ -438,7 +524,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"from_account\":\"SYSTEM\",\r\n    \"to_account\":\"01706360497\",\r\n    \"amount\": 20\r\n}",
+							"raw": "{\r\n    \"from_account\":\"SYSTEM\",\r\n    \"to_account\":\"{{agentphoneNumber}}\",\r\n    \"amount\":1000\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -523,7 +609,7 @@
 								"exec": [
 									"pm.test(\"Check if deposit is successful\", function () {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.contains(\"Maximum limit exceeded\");\r",
+									"    pm.expect(jsonData.message).to.contains(\"Deposit successful\");\r",
 									"});\r",
 									""
 								],
@@ -556,7 +642,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"from_account\":\"01706360497\",\r\n    \"to_account\":\"01799999997\",\r\n    \"amount\":100\r\n}",
+							"raw": "{\r\n    \"from_account\":\"{{agentphoneNumber}}\",\r\n    \"to_account\":\"{{phoneNumber}}\",\r\n    \"amount\":100\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -586,13 +672,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"check if have enough balance withdraw successful\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.contains(\"successful\");\r",
-									"});\r",
-									"pm.test(\"Status code is 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -614,7 +694,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"from_account\":\"01799999997\",\r\n    \"to_account\":\"01706360497\",\r\n    \"amount\":20\r\n}",
+							"raw": "{\r\n    \"from_account\":\"{{phoneNumber}}\",\r\n    \"to_account\":\"{{agentphoneNumber}}\",\r\n    \"amount\":20\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -668,7 +748,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"from_account\":\"01799999997\",\r\n    \"to_account\":\"01706360497\",\r\n    \"amount\":20000\r\n}",
+							"raw": "{\r\n    \"from_account\":\"01799999997\",\r\n    \"to_account\":\"{{agentphoneNumber}}\",\r\n    \"amount\":20000\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -695,7 +775,14 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									""
+									"pm.test(\"Check if have sufficient balance send money successful\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.contains(\"successful\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -717,7 +804,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\r\n{\r\n    \"from_account\":\"01799999997\",\r\n    \"to_account\":\"01700737450\",\r\n    \"amount\":50\r\n}",
+							"raw": "\r\n{\r\n    \"from_account\":\"{{phoneNumber}}\",\r\n    \"to_account\":\"{{secondphoneNumber}}\",\r\n    \"amount\":50\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -829,7 +916,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"from_account\":\"01700737450\",\r\n    \"to_account\":\"01686606905\",\r\n    \"amount\":100\r\n}",
+							"raw": "{\r\n    \"from_account\":\"{{secondphoneNumber}}\",\r\n    \"to_account\":\"01686606905\",\r\n    \"amount\":20\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -942,7 +1029,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}//transaction/balance/01706360497",
+							"raw": "{{baseURL}}//transaction/balance/{{agentphoneNumber}}",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -950,7 +1037,7 @@
 								"",
 								"transaction",
 								"balance",
-								"01706360497"
+								"{{agentphoneNumber}}"
 							]
 						}
 					},
@@ -984,7 +1071,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}//transaction/balance/01799999997",
+							"raw": "{{baseURL}}//transaction/balance/{{phoneNumber}}",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -992,7 +1079,7 @@
 								"",
 								"transaction",
 								"balance",
-								"01799999997"
+								"{{phoneNumber}}"
 							]
 						}
 					},
@@ -1015,14 +1102,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseURL}}/transaction/statement/01700737450",
+							"raw": "{{baseURL}}/transaction/statement/{{secondphoneNumber}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"transaction",
 								"statement",
-								"01700737450"
+								"{{secondphoneNumber}}"
 							]
 						}
 					},
@@ -1052,14 +1139,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{baseURL}}/transaction/balance/01700737450",
+							"raw": "{{baseURL}}/transaction/balance/{{secondphoneNumber}}",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"transaction",
 								"balance",
-								"01700737450"
+								"{{secondphoneNumber}}"
 							]
 						}
 					},
@@ -1132,7 +1219,7 @@
 	"variable": [
 		{
 			"key": "token",
-			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhbG1hbkByb2FkdG9jYXJlZXIubmV0IiwicGFzc3dvcmQiOiIxMjM0IiwiaWF0IjoxNjkyOTY1NjAzLCJleHAiOjE2OTI5Njc0MDN9.U4pJENcxhow-DQQi71Ppzv1S7G4sUlGd_zKqAU82-oI"
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhbG1hbkByb2FkdG9jYXJlZXIubmV0IiwicGFzc3dvcmQiOiIxMjM0IiwiaWF0IjoxNjkzMTQ1NTY2LCJleHAiOjE2OTMxNDczNjZ9.hHHjqYf83GLEuvsoOS1FOHBpCHTKYKkNjp2WaWOTw3E"
 		},
 		{
 			"key": "baseURL",
@@ -1146,11 +1233,19 @@
 		},
 		{
 			"key": "phoneNumber",
-			"value": "01700787699"
+			"value": "01700195604"
 		},
 		{
 			"key": "amount",
-			"value": 2481
+			"value": 6855
+		},
+		{
+			"key": "agentphoneNumber",
+			"value": "01700357223"
+		},
+		{
+			"key": "secondphoneNumber",
+			"value": ""
 		}
 	]
 }
