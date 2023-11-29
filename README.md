@@ -24,12 +24,9 @@
 ![Final](https://github.com/abanti07/dmoney-api-automation/assets/143074304/d384c0df-2876-41d5-a7ae-cf6b9c0f403f)
 
 
-
 ## Test Cases
 https://docs.google.com/spreadsheets/d/1qez6ZsBOx63D3XlUKEEa2csri7uG7IVZQzM5MydHdT4/edit#gid=1956823533
 
-## Bug Report
-https://docs.google.com/spreadsheets/d/18zp-WMBNvAUtoZBDCOgirrb4Rx6Mq1tpm_HW9-E8BgI/edit#gid=698401924
 
 
 
